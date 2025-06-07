@@ -1,0 +1,35 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches: [main]  # or use 'master' if your default branch is that
+  workflow_dispatch:  # allows manual trigger
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Set Docker tag
+        run: echo "TAG=cu118-$(date +%Y%m%d-%H%M)" >> $GITHUB_ENV
+
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/huggingfaceserver:v1 .
+
+      - name: Push Docker image
+        run: |
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/huggingfaceserver:v1
+
+      - name: Show pushed tag
+        run: echo "Image pushed: ${{ secrets.DOCKERHUB_USERNAME }}/huggingfaceserver:v1"
+
