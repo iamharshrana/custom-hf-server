@@ -19,4 +19,3 @@ RUN pip install --no-cache-dir \
 
 # Revert to non-root user
 USER 1000
-
